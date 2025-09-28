@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>erwin RAG Chat Assistant</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .chat-container {
+            width: 90%;
+            max-width: 1000px;
+            height: 90vh;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .chat-header {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .chat-header h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .chat-header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: #f8f9fa;
+        }
+
+        .message {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .message.user {
+            align-items: flex-end;
+        }
+
+        .message.assistant {
+            align-items: flex-start;
+        }
+
+        .message-content {
+            max-width: 70%;
+            padding: 15px 20px;
+            border-radius: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .message.user .message-content {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-bottom-right-radius: 5px;
+        }
+
+        .message.assistant .message-content {
+            background: white;
+            color: #2c3e50;
+            border-bottom-left-radius: 5px;
+            border-left: 4px solid #3498db;
+        }
+
+        .message-timestamp {
+            font-size: 12px;
+            opacity: 0.6;
+            margin-top: 5px;
+            padding: 0 5px;
+        }
+
+        .message-sources {
+            margin-top: 10px;
+            padding: 10px;
+            background: #ecf0f1;
+            border-radius: 10px;
+            font-size: 12px;
+        }
+
+        .source-item {
+            display: inline-block;
+            background: #3498db;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 15px;
+            margin: 2px;
+            font-size: 11px;
+        }
+
+        .confidence-indicator {
+            display: inline-block;
+            margin-left: 10px;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .confidence-high { background: #27ae60; color: white; }
+        .confidence-medium { background: #f39c12; color: white; }
+        .confidence-low { background: #e74c3c; color: white; }
+
+        .chat-input-container {
+            padding: 20px;
+            background: white;
+            border-top: 1px solid #ecf0f1;
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 15px 20px;
+            border: 2px solid #ecf0f1;
+            border-radius: 25px;
+            font-size: 16px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .chat-input:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        .send-button {
+            padding: 15px 25px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            min-width: 80px;
+        }
+
+        .send-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .send-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .typing-indicator {
+            display: none;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            background: white;
+            border-radius: 20px;
+            border-bottom-left-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            max-width: 70%;
+            border-left: 4px solid #3498db;
+        }
+
+        .typing-dots {
+            display: flex;
+            gap: 4px;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: #3498db;
+            border-radius: 50%;
+            animation: typing 1.4s infinite ease-in-out;
+        }
+
+        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+
+        @keyframes typing {
+            0%, 80%, 100% { transform: scale(0.8); opacity: 0.5; }
+            40% { transform: scale(1); opacity: 1; }
+        }
+
+        .sample-questions {
+            padding: 15px;
+            background: #e8f4fd;
+            margin: 10px 20px;
+            border-radius: 10px;
+            border-left: 4px solid #3498db;
+        }
+
+        .sample-questions h4 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .sample-question {
+            display: inline-block;
+            background: white;
+            color: #3498db;
+            padding: 8px 12px;
+            margin: 3px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 12px;
+            border: 1px solid #3498db;
+            transition: all 0.3s ease;
+        }
+
+        .sample-question:hover {
+            background: #3498db;
+            color: white;
+        }
+
+        .message-content pre {
+            white-space: pre-wrap;
+            margin: 0;
+        }
+
+        /* Markdown-style formatting */
+        .message-content strong {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .message-content em {
+            font-style: italic;
+        }
+
+        /* Scrollbar styling */
+        .chat-messages::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .chat-messages::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 3px;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            .chat-container {
+                width: 95%;
+                height: 95vh;
+                border-radius: 15px;
+            }
+
+            .message-content {
+                max-width: 85%;
+            }
+
+            .chat-header h1 {
+                font-size: 20px;
+            }
+
+            .sample-questions {
+                margin: 10px 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <h1>🤖 erwin Data Model Assistant</h1>
+            <p>Ask me about entities, attributes, business rules, and relationships</p>
+        </div>
+        
+        <div class="chat-messages" id="chatMessages">
+            <div class="sample-questions">
+                <h4>💡 Try asking:</h4>
+                <span class="sample-question" onclick="sendSampleQuestion('What is the Customer entity?')">Customer Entity</span>
+                <span class="sample-question" onclick="sendSampleQuestion('What attributes does Product have?')">Product Attributes</span>
+                <span class="sample-question" onclick="sendSampleQuestion('Tell me about Order Management')">Order Management</span>
+                <span class="sample-question" onclick="sendSampleQuestion('How are Customer and Order related?')">Relationships</span>
+                <span class="sample-question" onclick="sendSampleQuestion('What are the business rules for Payment?')">Business Rules</span>
+                <span class="sample-question" onclick="sendSampleQuestion('Tell me about Customer Management subject area')">Subject Areas</span>
+            </div>
+            
+            <div class="typing-indicator" id="typingIndicator">
+                <div class="typing-dots">
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="chat-input-container">
+            <input type="text" class="chat-input" id="messageInput" placeholder="Ask me about your erwin data model..." maxlength="500">
+            <button class="send-button" id="sendButton" onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <script>
+        let socket = null;
+        let isConnected = false;
+
+        function initWebSocket() {
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsUrl = `${protocol}//${window.location.host}/ws`;
+            
+            socket = new WebSocket(wsUrl);
+            
+            socket.onopen = function(event) {
+                console.log('Connected to WebSocket');
+                isConnected = true;
+                updateSendButton();
+            };
+            
+            socket.onclose = function(event) {
+                console.log('Disconnected from WebSocket');
+                isConnected = false;
+                updateSendButton();
+                // Try to reconnect after 3 seconds
+                setTimeout(initWebSocket, 3000);
+            };
+            
+            socket.onmessage = function(event) {
+                const data = JSON.parse(event.data);
+                addMessage('assistant', data.message, data.timestamp, data.sources, data.confidence);
+                hideTypingIndicator();
+            };
+            
+            socket.onerror = function(error) {
+                console.error('WebSocket error:', error);
+                hideTypingIndicator();
+            };
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            
+            if (message && isConnected) {
+                // Add user message to chat
+                addMessage('user', message, getCurrentTime());
+                
+                // Clear input
+                input.value = '';
+                
+                // Show typing indicator
+                showTypingIndicator();
+                
+                // Send message via WebSocket
+                socket.send(JSON.stringify({
+                    message: message
+                }));
+            }
+        }
+
+        function sendSampleQuestion(question) {
+            const input = document.getElementById('messageInput');
+            input.value = question;
+            sendMessage();
+        }
+
+        function addMessage(type, content, timestamp, sources = [], confidence = null) {
+            const messagesContainer = document.getElementById('chatMessages');
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            
+            let confidenceHTML = '';
+            if (confidence !== null && type === 'assistant') {
+                let confidenceClass = 'confidence-low';
+                let confidenceText = 'Low';
+                
+                if (confidence > 0.3) {
+                    confidenceClass = 'confidence-high';
+                    confidenceText = 'High';
+                } else if (confidence > 0.1) {
+                    confidenceClass = 'confidence-medium';
+                    confidenceText = 'Medium';
+                }
+                
+                confidenceHTML = `<span class="confidence-indicator ${confidenceClass}">${confidenceText} Confidence</span>`;
+            }
+            
+            let sourcesHTML = '';
+            if (sources && sources.length > 0 && type === 'assistant') {
+                sourcesHTML = '<div class="message-sources"><strong>Sources:</strong><br>';
+                sources.forEach(source => {
+                    sourcesHTML += `<span class="source-item">${source.name} (${source.type})</span>`;
+                });
+                sourcesHTML += '</div>';
+            }
+            
+            messageDiv.innerHTML = `
+                <div class="message-content">
+                    <pre>${formatMessage(content)}</pre>
+                    ${sourcesHTML}
+                </div>
+                <div class="message-timestamp">${timestamp}${confidenceHTML}</div>
+            `;
+            
+            messagesContainer.appendChild(messageDiv);
+            scrollToBottom();
+        }
+
+        function formatMessage(content) {
+            // Simple markdown-like formatting
+            return content
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>');
+        }
+
+        function showTypingIndicator() {
+            document.getElementById('typingIndicator').style.display = 'block';
+            scrollToBottom();
+        }
+
+        function hideTypingIndicator() {
+            document.getElementById('typingIndicator').style.display = 'none';
+        }
+
+        function scrollToBottom() {
+            const messagesContainer = document.getElementById('chatMessages');
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function getCurrentTime() {
+            return new Date().toLocaleTimeString('en-US', {
+                hour12: false,
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+        }
+
+        function updateSendButton() {
+            const sendButton = document.getElementById('sendButton');
+            const messageInput = document.getElementById('messageInput');
+            
+            if (isConnected) {
+                sendButton.disabled = false;
+                sendButton.textContent = 'Send';
+                messageInput.disabled = false;
+            } else {
+                sendButton.disabled = true;
+                sendButton.textContent = 'Connecting...';
+                messageInput.disabled = true;
+            }
+        }
+
+        // Event listeners
+        document.getElementById('messageInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        // Initialize WebSocket connection
+        initWebSocket();
+    </script>
+</body>
+</html>
