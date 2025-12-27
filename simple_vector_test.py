@@ -1,5 +1,5 @@
 """
-Improved ChromaDB test with better erwin data
+Improved ChromaDB test with better data model data
 """
 import chromadb
 from sentence_transformers import SentenceTransformer
@@ -9,7 +9,7 @@ print("🚀 Starting improved ChromaDB test...")
 # Step 1: Set up ChromaDB
 print("📁 Setting up ChromaDB...")
 client = chromadb.PersistentClient(path="./improved_chroma_db")
-collection = client.get_or_create_collection("erwin-entities")
+collection = client.get_or_create_collection("data-model-entities")
 print("✅ ChromaDB ready!")
 
 # Step 2: Set up embeddings
@@ -17,7 +17,7 @@ print("🧠 Loading embedding model...")
 embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
 print("✅ Embedding model ready!")
 
-# Step 3: Better erwin sample data (more detailed)
+# Step 3: Better sample data (more detailed)
 sample_entities = [
     {
         "name": "Customer",
@@ -200,4 +200,4 @@ except Exception as e:
     print(f"  Error getting stats: {e}")
 
 print("\n🎉 Improved test completed successfully!")
-print("✅ ChromaDB is working with detailed erwin data!")
+print("✅ ChromaDB is working with detailed data model data!")

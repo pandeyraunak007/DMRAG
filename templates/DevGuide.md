@@ -1,6 +1,6 @@
-# Complete Developer Guide: erwin RAG Chat Assistant
+# Complete Developer Guide: Data Model RAG Chat Assistant
 
-🤖 **A comprehensive guide to building a conversational AI system for erwin Data Modeler using RAG (Retrieval-Augmented Generation)**
+🤖 **A comprehensive guide to building a conversational AI system for Data Modeler using RAG (Retrieval-Augmented Generation)**
 
 ## Table of Contents
 
@@ -26,7 +26,7 @@
 
 ### What We Built
 
-A **complete conversational AI system** that allows users to interact with erwin Data Modeler information using natural language. Users can ask questions like "What is the Customer entity?" or "How are Orders and Customers related?" and get intelligent, contextual responses.
+A **complete conversational AI system** that allows users to interact with Data Modeler information using natural language. Users can ask questions like "What is the Customer entity?" or "How are Orders and Customers related?" and get intelligent, contextual responses.
 
 ### Key Features
 
@@ -154,8 +154,8 @@ User Question
 
 ```bash
 # Create project directory
-mkdir erwin-rag-chat
-cd erwin-rag-chat
+mkdir data-model-rag-chat
+cd data-model-rag-chat
 
 # Create virtual environment
 python -m venv venv
@@ -192,10 +192,10 @@ pip install -r requirements.txt
 Create the following directory structure:
 
 ```
-erwin-rag-chat/
+data-model-rag-chat/
 ├── web_chat_app.py              # Main web application
 ├── load_realistic_data.py       # Data loader script
-├── enhanced_erwin_chat.py       # CLI chat interface (optional)
+├── enhanced_data_model_chat.py       # CLI chat interface (optional)
 ├── simple_vector_test.py        # Basic test script
 ├── requirements.txt             # Python dependencies
 ├── README.md                    # Project documentation
@@ -229,10 +229,10 @@ python -c "from sentence_transformers import SentenceTransformer; print('✅ Sen
 
 **Key Functions**:
 ```python
-def get_realistic_erwin_data():
+def get_realistic_data_model():
     """Returns enterprise e-commerce data model with 8 entities"""
 
-class RealisticErwinLoader:
+class RealisticDataModelLoader:
     def load_data(self):
         """Loads complete data model into ChromaDB"""
     
@@ -253,7 +253,7 @@ class RealisticErwinLoader:
 
 **Key Components**:
 ```python
-class ErwinWebChatbot:
+class DataModelWebChatbot:
     def search_and_respond(self, question):
         """Core RAG pipeline - search and generate response"""
     
@@ -443,7 +443,7 @@ async def websocket_endpoint(websocket: WebSocket):
     # Send welcome message
     welcome = {
         "type": "assistant",
-        "message": "Hello! I'm your erwin assistant...",
+        "message": "Hello! I'm your data model assistant...",
         "timestamp": datetime.now().strftime("%H:%M:%S")
     }
     await websocket.send_text(json.dumps(welcome))
@@ -604,7 +604,7 @@ torch==2.1.0
 ```yaml
 services:
   - type: web
-    name: erwin-rag-chat
+    name: data-model-rag-chat
     env: python
     buildCommand: "pip install -r requirements.txt"
     startCommand: "python web_chat_app.py"
@@ -656,11 +656,11 @@ DEBUG=false
 Create `test_rag_system.py`:
 ```python
 import unittest
-from web_chat_app import ErwinWebChatbot
+from web_chat_app import DataModelWebChatbot
 
 class TestRAGSystem(unittest.TestCase):
     def setUp(self):
-        self.chatbot = ErwinWebChatbot()
+        self.chatbot = DataModelWebChatbot()
     
     def test_search_customer_entity(self):
         """Test searching for Customer entity"""
@@ -696,7 +696,7 @@ Run comprehensive tests:
 python load_realistic_data.py
 
 # Test CLI chat
-python enhanced_erwin_chat.py
+python enhanced_data_model_chat.py
 # Choose option 1 for comprehensive test
 
 # Test web interface
@@ -711,7 +711,7 @@ python web_chat_app.py
 # Check if data is loaded
 import chromadb
 client = chromadb.PersistentClient(path="./enterprise_chroma_db")
-collection = client.get_collection("enterprise-erwin-model")
+collection = client.get_collection("enterprise-data-model")
 print(f"Documents in collection: {collection.count()}")
 ```
 
@@ -895,7 +895,7 @@ results = self.collection.query(
 
 1. **Lazy Loading**:
 ```python
-class ErwinWebChatbot:
+class DataModelWebChatbot:
     def __init__(self):
         self.embedding_model = None
         self.collection = None
@@ -905,7 +905,7 @@ class ErwinWebChatbot:
         if self.embedding_model is None:
             self.embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
         if self.collection is None:
-            self.collection = self.client.get_collection("enterprise-erwin-model")
+            self.collection = self.client.get_collection("enterprise-data-model")
 ```
 
 2. **Response Caching**:
@@ -1146,7 +1146,7 @@ def search_and_respond(self, question):
    ```python
    class MultiModelRAG:
        def __init__(self):
-           self.models = {}  # Multiple erwin models
+           self.models = {}  # Multiple data models
            self.current_model = None
        
        def switch_model(self, model_name):
@@ -1166,7 +1166,7 @@ def search_and_respond(self, question):
 3. **Integration Capabilities**
    ```python
    # Connect to:
-   # - Real erwin Data Modeler via API
+   # - Real Data Modeler via API
    # - Database schemas (reverse engineering)
    # - Confluence/documentation systems
    # - Slack/Teams bots
@@ -1224,7 +1224,7 @@ def search_and_respond(self, question):
 
 ## Conclusion
 
-This developer guide provides a comprehensive overview of the erwin RAG Chat Assistant system. The architecture is designed to be:
+This developer guide provides a comprehensive overview of the Data Model RAG Chat Assistant system. The architecture is designed to be:
 
 - **Developer-friendly**: Clear code structure, good documentation
 - **Production-ready**: Error handling, logging, deployment configs

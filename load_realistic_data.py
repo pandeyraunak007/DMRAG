@@ -1,10 +1,10 @@
 """
-Load realistic enterprise erwin data model
+Load realistic enterprise data model
 """
 import chromadb
 from sentence_transformers import SentenceTransformer
 
-def get_realistic_erwin_data():
+def get_realistic_data_model():
     """Complete enterprise e-commerce data model"""
     return {
         "model_info": {
@@ -470,20 +470,20 @@ def get_realistic_erwin_data():
         ]
     }
 
-class RealisticErwinLoader:
+class RealisticDataModelLoader:
     def __init__(self):
-        print("🏗️ Initializing Realistic erwin Data Loader...")
+        print("🏗️ Initializing Realistic Data Model Loader...")
         
         # Set up ChromaDB
         self.client = chromadb.PersistentClient(path="./enterprise_chroma_db")
         
         # Create new collection for enterprise data
         try:
-            self.client.delete_collection("enterprise-erwin-model")
+            self.client.delete_collection("enterprise-data-model")
         except:
             pass
             
-        self.collection = self.client.create_collection("enterprise-erwin-model")
+        self.collection = self.client.create_collection("enterprise-data-model")
         
         # Set up embeddings
         self.embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
@@ -492,9 +492,9 @@ class RealisticErwinLoader:
     
     def load_data(self):
         """Load the complete enterprise data model"""
-        print("\n📥 Loading realistic enterprise erwin data...")
+        print("\n📥 Loading realistic enterprise data model...")
         
-        data = get_realistic_erwin_data()
+        data = get_realistic_data_model()
         
         # Load model metadata
         model_info = data['model_info']
@@ -674,16 +674,16 @@ class RealisticErwinLoader:
             return {"Error": str(e)}
 
 if __name__ == "__main__":
-    print("🚀 Starting Realistic erwin Data Load...")
+    print("🚀 Starting Realistic Data Model Load...")
     print("=" * 60)
     
-    loader = RealisticErwinLoader()
+    loader = RealisticDataModelLoader()
     loader.load_data()
     
     print("\n" + "=" * 60)
     print("🎉 Realistic data loading completed!")
     print("\nNext steps:")
-    print("1. Run: python enhanced_erwin_chat.py")
+    print("1. Run: python enhanced_data_model_chat.py")
     print("2. Try asking about specific subject areas")
     print("3. Ask about entity relationships")
     print("4. Explore business rules and attributes")

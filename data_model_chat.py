@@ -1,16 +1,16 @@
 """
-Simple Conversational Interface for erwin Data Model
+Simple Conversational Interface for Data Model
 """
 import chromadb
 from sentence_transformers import SentenceTransformer
 
-class ErwinChatbot:
+class DataModelChatbot:
     def __init__(self):
-        print("🤖 Initializing erwin Data Model Assistant...")
+        print("🤖 Initializing Data Model Assistant...")
         
         # Set up ChromaDB
         self.client = chromadb.PersistentClient(path="./improved_chroma_db")
-        self.collection = self.client.get_collection("erwin-entities")
+        self.collection = self.client.get_collection("data-model-entities")
         
         # Set up embeddings
         self.embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
@@ -131,7 +131,7 @@ class ErwinChatbot:
     def chat_loop(self):
         """Interactive chat loop"""
         print("\n" + "="*60)
-        print("🤖 erwin Data Model Assistant")
+        print("🤖 Data Model Assistant")
         print("="*60)
         print("Ask me about your data model! Examples:")
         print("• What is the Customer entity?")
@@ -146,7 +146,7 @@ class ErwinChatbot:
                 question = input("\n❓ Your question: ").strip()
                 
                 if question.lower() in ['quit', 'exit', 'q']:
-                    print("👋 Goodbye! Thanks for using the erwin Assistant!")
+                    print("👋 Goodbye! Thanks for using the Data Model Assistant!")
                     break
                 elif question.lower() == 'help':
                     self.show_help()
@@ -184,5 +184,5 @@ class ErwinChatbot:
 
 if __name__ == "__main__":
     # Create and start the chatbot
-    chatbot = ErwinChatbot()
+    chatbot = DataModelChatbot()
     chatbot.chat_loop()

@@ -1,5 +1,5 @@
 """
-Web Chat Interface for erwin RAG System
+Web Chat Interface for Data Model RAG System
 """
 from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect
 from fastapi.templating import Jinja2Templates
@@ -12,18 +12,18 @@ import uvicorn
 from datetime import datetime
 
 # Initialize FastAPI app
-app = FastAPI(title="erwin RAG Chat Interface", description="Conversational AI for erwin Data Models")
+app = FastAPI(title="Data Model RAG Chat Interface", description="Conversational AI for Data Models")
 
 # Set up templates (we'll create this)
 templates = Jinja2Templates(directory="templates")
 
-class ErwinWebChatbot:
+class DataModelWebChatbot:
     def __init__(self):
         print("🤖 Initializing Web Chatbot...")
         
         # Set up ChromaDB with enterprise data
         self.client = chromadb.PersistentClient(path="./enterprise_chroma_db")
-        self.collection = self.client.get_collection("enterprise-erwin-model")
+        self.collection = self.client.get_collection("enterprise-data-model")
         
         # Set up embeddings
         self.embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
@@ -200,7 +200,7 @@ class ErwinWebChatbot:
         return response
 
 # Initialize chatbot
-chatbot = ErwinWebChatbot()
+chatbot = DataModelWebChatbot()
 
 # Routes
 @app.get("/", response_class=HTMLResponse)
@@ -216,7 +216,7 @@ async def websocket_endpoint(websocket: WebSocket):
     # Send welcome message
     welcome_message = {
         "type": "assistant",
-        "message": "👋 Hello! I'm your erwin Data Model Assistant. Ask me about entities, attributes, business rules, or relationships in your data model!",
+        "message": "👋 Hello! I'm your Data Model Assistant. Ask me about entities, attributes, business rules, or relationships in your data model!",
         "timestamp": datetime.now().strftime("%H:%M:%S"),
         "sources": []
     }
@@ -252,6 +252,6 @@ async def websocket_endpoint(websocket: WebSocket):
         print("Client disconnected")
 
 if __name__ == "__main__":
-    print("🚀 Starting erwin RAG Web Chat Interface...")
+    print("🚀 Starting Data Model RAG Web Chat Interface...")
     print("📱 Open your browser to: http://localhost:8000")
     uvicorn.run(app, host="0.0.0.0", port=8000)

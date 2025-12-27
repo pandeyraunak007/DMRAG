@@ -1,16 +1,16 @@
 """
-Enhanced Conversational Interface for Enterprise erwin Data Model
+Enhanced Conversational Interface for Enterprise Data Model
 """
 import chromadb
 from sentence_transformers import SentenceTransformer
 
-class EnhancedErwinChatbot:
+class EnhancedDataModelChatbot:
     def __init__(self):
-        print("🤖 Initializing Enhanced erwin Data Model Assistant...")
+        print("🤖 Initializing Enhanced Data Model Assistant...")
         
         # Set up ChromaDB with enterprise data
         self.client = chromadb.PersistentClient(path="./enterprise_chroma_db")
-        self.collection = self.client.get_collection("enterprise-erwin-model")
+        self.collection = self.client.get_collection("enterprise-data-model")
         
         # Set up embeddings
         self.embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
@@ -398,7 +398,7 @@ class EnhancedErwinChatbot:
     def chat_loop(self):
         """Interactive chat loop"""
         print("\n" + "="*70)
-        print("🤖 Enhanced erwin Data Model Assistant")
+        print("🤖 Enhanced Data Model Assistant")
         print("="*70)
         print("Ask me about your enterprise data model!")
         print("\nExamples:")
@@ -417,7 +417,7 @@ class EnhancedErwinChatbot:
                 question = input("\n❓ Your question: ").strip()
                 
                 if question.lower() in ['quit', 'exit', 'q']:
-                    print("👋 Goodbye! Thanks for using the Enhanced erwin Assistant!")
+                    print("👋 Goodbye! Thanks for using the Enhanced Data Model Assistant!")
                     break
                 elif question.lower() == 'test':
                     self.run_test_queries()
@@ -477,7 +477,7 @@ class EnhancedErwinChatbot:
 
 if __name__ == "__main__":
     # Create and start the enhanced chatbot
-    chatbot = EnhancedErwinChatbot()
+    chatbot = EnhancedDataModelChatbot()
     
     # Ask user what they want to do
     print("\nWhat would you like to do?")
